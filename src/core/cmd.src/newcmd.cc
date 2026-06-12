@@ -282,13 +282,12 @@ cl_console_base::dd_printf(const char *format, ...)
 bool
 cl_console_base::opt_bw(void)
 {
-  bool bw= false, fc= false;
+  bool bw= false;
   class cl_f *fo= get_fout();
   class cl_option *o= application->options->get_option("black_and_white");
-  class cl_option *c= application->options->get_option("force_colors");
+  bool fc= application->get_force_colors();
   
   if (o) o->get_value(&bw);
-  if (c) c->get_value(&fc);
   if (!fo ||
       (fo &&
       !fo->tty)
@@ -327,17 +326,38 @@ cl_console_base::dd_cprintf(const char *color_name, const char *format, ...)
   return(ret);
 }
 
+int
+cl_console_base::dd_cdef(void)
+{
+  char *bg, *fg;
+  bool bw= opt_bw();
+  int ret;
+  if (bw)
+    return 0;
+  class cl_option *o= application->options->get_option("color_bg");
+  bg= NULL;
+  if (o) o->get_value(&bg);
+  o= application->options->get_option("color_fg");
+  fg= NULL;
+  if (o) o->get_value(&fg);
+  chars cce;
+  cce= colopt2ansiseq(bg);
+  ret= dd_printf("\033[0m%s", cce.cstr());
+  cce= colopt2ansiseq(fg);
+  ret+= dd_printf("\033[m%s", cce.cstr());
+  return ret;
+}
+
 chars
 cl_console_base::get_color_ansiseq(const char *color_name, bool add_reset)
 {
-  bool bw= non_color(), fc= false;
+  bool bw= non_color();
   char *cc;
   chars cce= "";
   class cl_f *fo= get_fout();
   class cl_option *o= application->options->get_option("black_and_white");
-  class cl_option *c= application->options->get_option("force_colors");
+  bool fc= application->get_force_colors();
   if (o) o->get_value(&bw);
-  if (c) c->get_value(&fc);
 
   if (!fc)
     {

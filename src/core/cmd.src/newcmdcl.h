@@ -150,6 +150,7 @@ class cl_console_base: public cl_base
   virtual int dd_printf(const char *format, ...);
   virtual bool opt_bw(void);
   virtual int dd_cprintf(const char *color_name, const char *format, ...);
+  virtual int dd_cdef(void); // change print color to default
   virtual chars get_color_ansiseq(const char *color_name, bool add_reset= false);
   virtual void dd_color(const char *color_name);
   virtual int write(char *buf, int count);

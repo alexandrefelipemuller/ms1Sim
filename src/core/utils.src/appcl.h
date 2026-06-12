@@ -151,6 +151,7 @@ public: // output functions
 
 public:
   virtual void set_option_s(const char *opt_name, const char *new_value);
+  virtual bool get_force_colors(void);
 };
 
 
