@@ -342,10 +342,11 @@ cl_console_base::dd_cdef(void)
   fg= NULL;
   if (o) o->get_value(&fg);
   chars cce;
-  cce= colopt2ansiseq(bg);
+  cce= fg;
+  cce+= ":";
+  cce+= bg;
+  cce= colopt2ansiseq(cce.str());
   ret= dd_printf("%s", cce.cstr());
-  cce= colopt2ansiseq(fg);
-  ret+= dd_printf("%s", cce.cstr());
   return ret;
 }
 

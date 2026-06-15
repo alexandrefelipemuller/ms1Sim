@@ -257,19 +257,11 @@ valid_sym_name(char *s)
 
 */
 
-enum col_ctype_t
-  {
-   ct_none= 0,
-   ct_bold= 0x01,
-   ct_faint= 0x02,
-   ct_italic= 0x04,
-   ct_underl= 0x08,
-   ct_dunderl= 0x10,
-   ct_crossed= 0x20,
-   ct_overl= 0x40,
-   ct_blink= 0x80
-  };
-
+cl_color_name::cl_color_name(chars n):
+  cl_base()
+{
+}
+  
 chars
 colopt2ansiseq(char *opt)
 {
