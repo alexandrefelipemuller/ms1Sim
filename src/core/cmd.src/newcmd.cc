@@ -155,8 +155,9 @@ cl_console_base::init(void)
   debug_option->init();
   welcome();
   print_prompt();
-  if (get_fin() != NULL)
-    get_fin()->set_echo_color(get_color_ansiseq("command"));
+  //if (get_fin() != NULL)
+  //get_fin()->set_echo_color(get_color_ansiseq("command"));
+  dd_color("command");
   last_command= 0;
   //last_cmdline= 0;
   last_cmd= chars("");
@@ -352,7 +353,7 @@ chars
 cl_console_base::get_color_ansiseq(const char *color_name, bool add_reset)
 {
   chars cce= "";
-  if (!opt_bw())
+  if (opt_bw())
     return cce;
 
   char *cc;
@@ -464,14 +465,6 @@ cl_console_base::cmd_do_cprint(const char *color_name, const char *format, va_li
   int ret;
   class cl_f *fo= get_fout(), *fi= get_fin();
   bool bw= opt_bw();
-  char *cc;
-  chars cce;
-  class cl_option *o;
-      
-  o= application->options->get_option(chars("", "color_%s", color_name));
-  cc= NULL;
-  if (o) o->get_value(&cc);
-  cce= colopt2ansiseq(cc);
 
   if (fo)
     {
@@ -481,7 +474,17 @@ cl_console_base::cmd_do_cprint(const char *color_name, const char *format, va_li
 	{
 	  return 0;
 	}
-      if (!bw) fo->prntf("\033[0m%s", cce.c_str());
+      if (!bw)
+	{
+	  char *cc;
+	  chars cce;
+	  class cl_option *o;
+	  o= application->options->get_option(chars("", "color_%s", color_name));
+	  cc= NULL;
+	  if (o) o->get_value(&cc);
+	  cce= colopt2ansiseq(cc);
+	  fo->prntf("\033[0m%s", cce.c_str());
+	}
       ret= fo->vprintf(format, ap);
       if (!bw) fo->prntf("\033[0m");
       //fo->flush();
@@ -736,8 +739,9 @@ cl_console_base::proc_input(class cl_cmdset *cmdset)
 		      print_expr_result(l, NULL);
 		    }
 		}
-	      if (get_fin() != NULL)
-		get_fin()->set_echo_color(get_color_ansiseq("command"));
+	      //if (get_fin() != NULL)
+	      //get_fin()->set_echo_color(get_color_ansiseq("command"));
+	      dd_color("command");
 	      lbuf= cmdline->rest;
 	      cmdstr= lbuf;
 	      delete cmdline;
@@ -811,11 +815,10 @@ cl_console_stdout::init(void)
   null_prompt_option= 0;
   debug_option= 0;
   set_flag(CONS_NOWELCOME, true);
-  //cl_console_base::init();
-  if (get_fin() != NULL)
-    get_fin()->set_echo_color(get_color_ansiseq("command"));
+  //if (get_fin() != NULL)
+  //get_fin()->set_echo_color(get_color_ansiseq("command"));
+  dd_color("command");
   last_command= 0;
-  //last_cmdline= 0;
   last_cmd= chars("");
   prev_quit= -1;
   set_interactive(false);
