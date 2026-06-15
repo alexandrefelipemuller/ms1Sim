@@ -116,7 +116,7 @@ class cl_console_base: public cl_base
 
   int tu_bg_color, tu_fg_color;
  public:
-    int prev_quit;
+  int prev_quit;
 
  public:
   cl_console_base(void);

@@ -167,6 +167,8 @@ cl_console_base::init(void)
 void
 cl_console_base::welcome(void)
 {
+  if (app->get_option_fc())
+    dd_cdef();
   if (!(flags & CONS_NOWELCOME) && !app->nowelcome)
     {
       dd_printf("uCsim%s, Copyright (C) 1997 Daniel Drotos.\n"
@@ -282,12 +284,10 @@ cl_console_base::dd_printf(const char *format, ...)
 bool
 cl_console_base::opt_bw(void)
 {
-  bool bw= false;
+  bool bw= application->get_option_bw();
+  bool fc= application->get_option_fc();
   class cl_f *fo= get_fout();
-  class cl_option *o= application->options->get_option("black_and_white");
-  bool fc= application->get_force_colors();
   
-  if (o) o->get_value(&bw);
   if (!fo ||
       (fo &&
       !fo->tty)
@@ -342,34 +342,23 @@ cl_console_base::dd_cdef(void)
   if (o) o->get_value(&fg);
   chars cce;
   cce= colopt2ansiseq(bg);
-  ret= dd_printf("\033[0m%s", cce.cstr());
+  ret= dd_printf("%s", cce.cstr());
   cce= colopt2ansiseq(fg);
-  ret+= dd_printf("\033[m%s", cce.cstr());
+  ret+= dd_printf("%s", cce.cstr());
   return ret;
 }
 
 chars
 cl_console_base::get_color_ansiseq(const char *color_name, bool add_reset)
 {
-  bool bw= non_color();
-  char *cc;
   chars cce= "";
-  class cl_f *fo= get_fout();
-  class cl_option *o= application->options->get_option("black_and_white");
-  bool fc= application->get_force_colors();
-  if (o) o->get_value(&bw);
+  if (!opt_bw())
+    return cce;
 
-  if (!fc)
-    {
-      if (!fo ||
-	  (fo &&
-	   !fo->tty) ||
-	  bw
-	  )
-	return cce;
-    }
+  char *cc;
+  class cl_f *fo= get_fout();
   
-  o= application->options->get_option(chars("", "color_%s", color_name));
+  class cl_option *o= application->options->get_option(chars("", "color_%s", color_name));
   cc= NULL;
   if (o) o->get_value(&cc);
   if (add_reset)

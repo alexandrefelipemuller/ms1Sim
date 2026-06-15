@@ -1616,7 +1616,7 @@ cl_app::set_option_s(const char *opt_name, const char *new_value)
 
 
 bool
-cl_app::get_force_colors(void)
+cl_app::get_option_fc(void)
 {
   class cl_option *c= options->get_option("force_colors");
   if (!c)
@@ -1624,6 +1624,18 @@ cl_app::get_force_colors(void)
   bool fc;
   c->get_value(&fc);
   return fc;
+}
+
+
+bool
+cl_app::get_option_bw(void)
+{
+  class cl_option *c= options->get_option("black_and_white");
+  if (!c)
+    return false;
+  bool bw;
+  c->get_value(&bw);
+  return bw;
 }
 
 
