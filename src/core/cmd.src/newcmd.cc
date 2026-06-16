@@ -168,7 +168,7 @@ cl_console_base::init(void)
 void
 cl_console_base::welcome(void)
 {
-  if (app->get_option_fc())
+  if (!opt_bw())
     dd_cdef();
   if (!(flags & CONS_NOWELCOME) && !app->nowelcome)
     {

@@ -53,8 +53,15 @@ enum col_ctype_t
 
 class cl_color_name: public cl_base
 {
+public:
+  bool ok;
+  int color;
+  bool bright;
+  bool rgb;
+  int red, green, blue;
  public:
-  cl_color_name(chars n);
+  cl_color_name(void);
+  virtual void init(chars n);
 };
 
 

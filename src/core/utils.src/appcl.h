@@ -150,6 +150,7 @@ public: // output functions
   virtual int debug(const char *format, ...);
 
 public:
+  virtual chars get_option(chars name);
   virtual void set_option_s(const char *opt_name, const char *new_value);
   virtual bool get_option_fc(void);
   virtual bool get_option_bw(void);
