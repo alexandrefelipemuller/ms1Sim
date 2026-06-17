@@ -703,7 +703,10 @@ cl_console_base::proc_input(class cl_cmdset *cmdset)
           class cl_cmdline *cmdline= 0;
           class cl_cmd *cm = 0;
           if (get_flag(CONS_ECHO))
-            dd_cprintf("command", "%s\n", cmdstr);
+	    {
+	      print_prompt();
+	      dd_cprintf("command", "%s\n", cmdstr);
+	    }
 	  do
 	    {
 	      un_redirect();
