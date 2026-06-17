@@ -188,7 +188,7 @@ cl_console_base::print_prompt(void)
   if (flags & (CONS_FROZEN | CONS_INACTIVE))
     return;
 
-  if (!(flags & CONS_INTERACTIVE))
+  if (!(flags & (CONS_INTERACTIVE|CONS_ECHO)))
     return;
   
   if (null_prompt_option->get_value(bool(0)))
@@ -704,7 +704,7 @@ cl_console_base::proc_input(class cl_cmdset *cmdset)
           class cl_cmd *cm = 0;
           if (get_flag(CONS_ECHO))
 	    {
-	      print_prompt();
+	      //print_prompt();
 	      dd_cprintf("command", "%s\n", cmdstr);
 	    }
 	  do
