@@ -742,7 +742,6 @@ cl_console_base::proc_input(class cl_cmdset *cmdset)
 		}
 	      //if (get_fin() != NULL)
 	      //get_fin()->set_echo_color(get_color_ansiseq("command"));
-	      dd_color("command");
 	      lbuf= cmdline->rest;
 	      cmdstr= lbuf;
 	      delete cmdline;
@@ -759,6 +758,7 @@ cl_console_base::proc_input(class cl_cmdset *cmdset)
     {
       print_prompt();
     }
+  dd_color("command");
   lbuf= 0;
   return(retval);
 }
