@@ -457,6 +457,8 @@ enum {
   DOPT_NOWELCOME= 1,
   DOPT_HIDEECHO = 2,
   DOPT_SHOWINPUT= 3,
+  DOPT_HTML     = 4,
+  DOPT_WTML     = 5,
   DOPT_ERROR
 };
 
@@ -465,6 +467,8 @@ static const char *D_opts[]= {
   /*DOPT_NOWELCOME*/    "nowelcome",
   /*DOPT_HIDEECHO */    "hideecho",
   /*DOPT_SHOWINPUT*/	"showinput",
+  /*DOPT_HTML     */	"html",
+  /*DOPT_WTML     */    "wtml",
   NULL
 };
 
@@ -725,6 +729,19 @@ cl_app::proc_arguments(int argc, char *argv[])
 		  break;
 		case DOPT_SHOWINPUT:
 		  show_input= true;
+		  break;
+		case DOPT_HTML:
+		  nowelcome= true;
+		  hide_echo= true;
+		  show_input= true;
+		  force_colors= true;
+		  options->set_value("force_colors", this, bool(true));
+		  break;
+		case DOPT_WTML:
+		  hide_echo= true;
+		  show_input= true;
+		  force_colors= true;
+		  options->set_value("force_colors", this, bool(true));
 		  break;
 		default:
 		  /* Unknown suboption. */

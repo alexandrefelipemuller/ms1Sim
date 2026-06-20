@@ -704,7 +704,7 @@ cl_console_base::proc_input(class cl_cmdset *cmdset)
           class cl_cmd *cm = 0;
           if (get_flag(CONS_ECHO))
 	    {
-	      //print_prompt();
+	      print_prompt();
 	      dd_cprintf("command", "%s\n", cmdstr);
 	    }
 	  do
@@ -757,10 +757,12 @@ cl_console_base::proc_input(class cl_cmdset *cmdset)
   if (!retval &&
       //cmdstr &&
       do_print_prompt &&
-      !get_flag(CONS_REDIRECTED))
+      !get_flag(CONS_REDIRECTED) &&
+      !get_flag(CONS_ECHO))
     {
       print_prompt();
     }
+  //else if (!get_flag(CONS_ECHO)) print_prompt();
   dd_color("command");
   lbuf= 0;
   return(retval);
