@@ -74,6 +74,8 @@ cl_app::cl_app(void)
   options= new cl_options();
   quiet= false;
   nowelcome= false;
+  hide_echo= false;
+  show_input= false;
   retmain= false;
   retval= 0;
   if (app_start_at == 0)
@@ -453,12 +455,16 @@ static const char *I_opts[]= {
 enum {
   DOPT_CPU_SPEED= 0,
   DOPT_NOWELCOME= 1,
+  DOPT_HIDEECHO = 2,
+  DOPT_SHOWINPUT= 3,
   DOPT_ERROR
 };
 
 static const char *D_opts[]= {
   /*DOPT_CPU_SPEED*/	"cpu_speed",
   /*DOPT_NOWELCOME*/    "nowelcome",
+  /*DOPT_HIDEECHO */    "hideecho",
+  /*DOPT_SHOWINPUT*/	"showinput",
   NULL
 };
 
@@ -713,6 +719,12 @@ cl_app::proc_arguments(int argc, char *argv[])
 		  break;
 		case DOPT_NOWELCOME:
 		  nowelcome= true;
+		  break;
+		case DOPT_HIDEECHO:
+		  hide_echo= true;
+		  break;
+		case DOPT_SHOWINPUT:
+		  show_input= true;
 		  break;
 		default:
 		  /* Unknown suboption. */

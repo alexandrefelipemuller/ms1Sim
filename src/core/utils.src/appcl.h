@@ -97,6 +97,8 @@ public:
   u32_t period, cyc, acyc;
   bool quiet; // -q
   bool nowelcome; // -Dnowelcome
+  bool hide_echo; // -Dhideecho
+  bool show_input; // -Dshowinput
   bool retmain; // -m
   int retval;
   class cl_console_stdout *ocon;
