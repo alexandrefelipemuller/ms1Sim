@@ -175,6 +175,8 @@ cl_console::replace_files(bool close_old, cl_f *new_in, cl_f *new_out)
 
 cl_console::~cl_console(void)
 {
+  if (get_flag(CONS_ECHO))
+    print_prompt();
   un_redirect();
   if (fout)
     {
