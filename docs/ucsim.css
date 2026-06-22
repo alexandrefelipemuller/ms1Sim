@@ -32,6 +32,15 @@ samp {
   white-space: pre;
 }
 
+.eg {
+    background-color: black;
+    color: white;
+    padding: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 1.0em;
+    white-space: pre;
+}
+
 table {
     border-collapse: collapse;
     margin-bottom: 20px;
@@ -46,7 +55,8 @@ tt {
     background-color: #f9f9f9;
     padding: 2px 4px;
     border-radius: 3px;
-    color: #c7254e;
+    /*color: #c7254e;*/
+    color: #a7051e;
 }
 
 h1, h2, h3, h4 {
@@ -81,4 +91,15 @@ p {
 ul {
     /*list-style-type: none;*/
     /*padding-left: 0;*/
+}
+
+logo {
+    font-family: 'Consolas', 'Courier New', monospace;
+    /*background-color: #f9f9f9;*/
+    padding: 2px 4px;
+    border-radius: 3px;
+    white-space: pre;
+    overflow-x: auto;
+    /*color: #c7254e;*/
+    color: #333355;
 }
