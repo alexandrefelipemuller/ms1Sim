@@ -31,9 +31,11 @@ int
 cl_i8080::add8(u8_t op, bool add_c, bool is_daa)
 {
   u16_t res;
-  if (add_c && (rF & flagC))
-    op++;
-  res= rA+op;
+  /* Take the incoming carry as a separate term; do NOT fold it into op with
+     op++, which overflows the u8_t to 0x00 when op==0xff and then loses both
+     the carry-out and the half-carry (e.g. 0xff + 0xff + 1). */
+  u8_t carry_in = (add_c && (rF & flagC)) ? 1 : 0;
+  res= rA+op+carry_in;
   rF&= ~fAll_A;
   if (!is_daa) rF&= ~flagA;
   if (res>0xff) rF|= flagC;
@@ -41,7 +43,7 @@ cl_i8080::add8(u8_t op, bool add_c, bool is_daa)
   res&= 0xff;
   if (!res) rF|= flagZ;
   if (!is_daa)
-    if ((rA&0xf)+(op&0xf) > 0xf)
+    if ((rA&0xf)+(op&0xf)+carry_in > 0xf)
       rF|= flagA;
   rF|= ADDV8(rA,op,res);
   rF|= X5(res);
