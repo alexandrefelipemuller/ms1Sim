@@ -258,16 +258,15 @@ int
 cl_i8085::DSUB(t_mem code)
 {
   u16_t a= rHL, b= rBC;
-  u32_t r;
-  b= ~b+1;
-  r= a+b;
+  u16_t nb= (u16_t)(~b + 1);   // two's complement of BC
+  u32_t r= (u32_t)a + nb;
   rF&= ~fAll;
-  if (r <= 0xffff) rF|= flagC;
+  if (a < b) rF|= flagC;        // borrow occurs when HL < BC (unsigned)
   if (r & 0x8000) rF|= flagS;
-  r&= 0xffff;
-  if (!r) rF|= flagZ;
-  if (((a&0xfff) + (b&0xfff)) > 0xfff) rF|= flagA;
-  rF|= ptab[r>>8];
+  if (!(r & 0xffff)) rF|= flagZ;
+  if (((a&0xfff) + (nb&0xfff)) > 0xfff) rF|= flagA;
+  rF|= ADDV16(a, nb, r);        // V (overflow), like the 8-bit sub8 path
+  rF|= ptab[(r>>8) & 0xff];
   cHL.W(r);
   cF.W(rF);
   return resGO;
@@ -276,13 +275,13 @@ cl_i8085::DSUB(t_mem code)
 int
 cl_i8085::JNX5(t_mem code)
 {
-  return jmp_if(rF & flagX5);
+  return jmp_if(!(rF & flagX5));   // jump if X5 (K) flag is clear
 }
 
 int
 cl_i8085::JX5(t_mem code)
 {
-  return jmp_if(!(rF & flagX5));
+  return jmp_if(rF & flagX5);      // jump if X5 (K) flag is set
 }
 
 int
@@ -300,18 +299,16 @@ cl_i8085::RSTV(t_mem code)
 int
 cl_i8085::LDHI(t_mem code)
 {
-  u16_t a= rHL + fetch();
-  cDE.W(read_addr(rom, a));
-  vc.rd+= 2;
+  // DE = HL + imm8 (register arithmetic; no memory access, no flags)
+  cDE.W((u16_t)(rHL + fetch()));
   return resGO;
 }
 
 int
 cl_i8085::LDSI(t_mem code)
 {
-  u16_t a= rSP + fetch();
-  cDE.W(read_addr(rom, a));
-  vc.rd+= 2;
+  // DE = SP + imm8 (register arithmetic; no memory access, no flags)
+  cDE.W((u16_t)(rSP + fetch()));
   return resGO;
 }
 
