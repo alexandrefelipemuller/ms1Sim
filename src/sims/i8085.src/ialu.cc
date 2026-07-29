@@ -70,7 +70,14 @@ cl_i8080::sub8(u8_t op, bool sub_c, bool cmp)
   res&= 0xff;
   if (!res) rF|= flagZ;
   if ((rA&0xf)+(op&0xf) > 0xf) rF|= flagA;
-  rF|= ADDV8(rA,op,res);
+  /* V (overflow) is carry-in XOR carry-out of bit 7 of the real ALU operation
+     A + ~b + carry. Applying the sign-based overflow formula to the two's-
+     complement operand (op) folds the +1 into the operand and loses the carry
+     propagation, giving the wrong V when ~b+1 itself overflows (b == 0x80). Use
+     the one's-complement of the original operand instead; res already carries
+     the +1, so ADDV8(A, ~orgb, res) matches the silicon (see Shirriff's 8085
+     flag analysis) and makes the K/X5 flag a correct signed comparison. */
+  rF|= ADDV8(rA,(u8_t)~orgb,res);
   rF|= X5(res);
   rF|= ptab[res];
   if (!cmp) cA.W(res);

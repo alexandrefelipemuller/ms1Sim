@@ -265,7 +265,11 @@ cl_i8085::DSUB(t_mem code)
   if (r & 0x8000) rF|= flagS;
   if (!(r & 0xffff)) rF|= flagZ;
   if (((a&0xfff) + (nb&0xfff)) > 0xfff) rF|= flagA;
-  rF|= ADDV16(a, nb, r);        // V (overflow), like the 8-bit sub8 path
+  /* V = carry-in XOR carry-out of bit 15; use the one's-complement operand so
+     the +1 folded into nb does not lose the carry at b == 0x8000 (same fix as
+     sub8). Then set K/X5 = V XOR sign, a correct 16-bit signed comparison. */
+  rF|= ADDV16(a, (u16_t)~b, r);
+  rF|= X516(r);
   rF|= ptab[(r>>8) & 0xff];
   cHL.W(r);
   cF.W(rF);
