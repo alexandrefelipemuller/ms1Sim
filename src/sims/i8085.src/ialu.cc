@@ -55,12 +55,15 @@ int
 cl_i8080::sub8(u8_t op, bool sub_c, bool cmp)
 {
   u16_t orga= rA, orgb= op;
-  if (sub_c && (rF & flagC))
+  u8_t borrow_in= (sub_c && (rF & flagC)) ? 1 : 0;
+  if (borrow_in)
     op++;
   op= ~op+1;
   u16_t res= rA+op;
   rF&= ~fAll;
-  if (/*res<=0xff*/orga<orgb) rF|= flagC;
+  /* A borrow (carry) occurs when A < operand + incoming-borrow.  orgb is a
+     u16_t so orgb+borrow_in does not overflow when the operand byte is 0xff. */
+  if (orga < orgb + borrow_in) rF|= flagC;
   if (res&0x80) rF|= flagS;
   res&= 0xff;
   if (!res) rF|= flagZ;
