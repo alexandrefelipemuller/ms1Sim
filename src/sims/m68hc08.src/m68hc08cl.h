@@ -43,10 +43,15 @@ public:
   class cl_address_space *ram, *regs8, *regs16;
   struct t_regs regs;
   t_addr sp_limit;
+  // pending hardware interrupt vectors (peripherals enqueue, core dispatches)
+  enum { irq_queue_size = 8 };
+  t_addr irq_queue[irq_queue_size];
+  int irq_head, irq_tail, irq_count;
 public:
   cl_hc08(struct cpu_entry *Itype, class cl_sim *asim);
   virtual int init(void);
   virtual const char *id_string(void);
+  virtual void request_irq(t_addr vector);
 
   //virtual t_addr get_mem_size(enum mem_class type);
   virtual void mk_hw_elements(void);

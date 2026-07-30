@@ -48,6 +48,8 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 #include "glob.h"
 //#include "regshc08.h"
 #include "hc08mac.h"
+#include "hw_sci.h"
+#include "hw_adc.h"
 
 //#define uint32 t_addr
 //#define uint8 unsigned char
@@ -102,7 +104,20 @@ cl_hc08::reset(void)
   regs.P = 0x60;
   regs.VECTOR = 1;
 
+  irq_head = irq_tail = irq_count = 0;
+
   PC= rom->get(0xfffe)*256 + rom->get(0xffff);
+}
+
+void
+cl_hc08::request_irq(t_addr vector)
+{
+  if (irq_count < irq_queue_size)
+    {
+      irq_queue[irq_tail]= vector;
+      irq_tail= (irq_tail+1) % irq_queue_size;
+      irq_count++;
+    }
 }
 
 
@@ -137,6 +152,12 @@ cl_hc08::mk_hw_elements(void)
   cl_uc::mk_hw_elements();
 
   add_hw(h= new cl_dreg(this, 0, "dreg"));
+  h->init();
+
+  add_hw(h= new cl_sci(this, 0, 0x13));
+  h->init();
+
+  add_hw(h= new cl_adc(this, 0, 0x3c));
   h->init();
 }
 
@@ -477,6 +498,22 @@ cl_hc08::exec_inst(void)
   if (regs.VECTOR) {
     PC = get2(0xfffe);
     regs.VECTOR = 0;
+    return(resGO);
+  }
+
+  if (irq_count && !(regs.P & BIT_I)) {
+    t_addr vector= irq_queue[irq_head];
+    irq_head= (irq_head+1) % irq_queue_size;
+    irq_count--;
+
+    instPC= PC;
+    push2(PC); tick(2);
+    push1(regs.X); tick(1);
+    push1(regs.A); tick(1);
+    push1(regs.P); tick(1);
+    FLAG_SET(BIT_I);
+    PC= get2(vector);
+    tick(2);
     return(resGO);
   }
 
