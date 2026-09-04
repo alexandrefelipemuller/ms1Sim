@@ -50,6 +50,8 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 #include "hc08mac.h"
 #include "hw_sci.h"
 #include "hw_adc.h"
+#include "hw_trigger.h"
+#include "hw_gpio_observer.h"
 
 //#define uint32 t_addr
 //#define uint8 unsigned char
@@ -158,6 +160,12 @@ cl_hc08::mk_hw_elements(void)
   h->init();
 
   add_hw(h= new cl_adc(this, 0, 0x3c));
+  h->init();
+
+  add_hw(h= new cl_trigger(this, 0));
+  h->init();
+
+  add_hw(h= new cl_gpio_observer(this, 0));
   h->init();
 }
 

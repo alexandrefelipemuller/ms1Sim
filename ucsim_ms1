@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#
+# ucsim_ms1 - dedicated MS1/Slowduino-HC08 firmware simulator wrapper.
+#
+# Loads a .s19/.ihx firmware image onto the simulated MC68HC908GP32,
+# runs it continuously (no interactive debug prompt), exposes the SCI
+# as a raw TCP socket for TunerStudio (bridge with socat if you need a
+# real /dev serial endpoint), drives a configurable crank trigger pulse
+# on the IRQ pin, and logs ignition/injection pin transitions.
+#
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bin="$here/src/sims/m68hc08.src/ucsim_m68hc08"
+
+firmware=""
+tcp_port=12000
+rpm=0
+pattern="36-1"
+gpio_log=""
+xtal=8000000
+
+usage() {
+  cat <<EOF
+Usage: $0 --firmware path.ihx [options]
+
+  --firmware PATH     .ihx or .s19 firmware image (required)
+  --tcp-port N        TCP port for the simulated SCI (default: $tcp_port)
+  --rpm N              simulated crank RPM driving the trigger wheel (default: off)
+  --pattern N-M        trigger wheel pattern, teeth-missing (default: $pattern)
+  --gpio-log PATH      log file for PTA/PTB pin transitions (default: stdout)
+  --xtal HZ            simulated bus crystal frequency (default: $xtal)
+EOF
+  exit 1
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --firmware) firmware="$2"; shift 2 ;;
+    --tcp-port) tcp_port="$2"; shift 2 ;;
+    --rpm) rpm="$2"; shift 2 ;;
+    --pattern) pattern="$2"; shift 2 ;;
+    --gpio-log) gpio_log="$2"; shift 2 ;;
+    --xtal) xtal="$2"; shift 2 ;;
+    -h|--help) usage ;;
+    *) echo "Unknown option: $1" >&2; usage ;;
+  esac
+done
+
+[ -n "$firmware" ] || { echo "Error: --firmware is required" >&2; usage; }
+[ -x "$bin" ] || { echo "Error: $bin not built yet - run 'make ms1' in src/" >&2; exit 1; }
+
+export MS1_TRIGGER_RPM="$rpm"
+export MS1_TRIGGER_PATTERN="$pattern"
+export MS1_TRIGGER_ENABLE=$([ "$rpm" -gt 0 ] 2>/dev/null && echo 1 || echo 0)
+export MS1_GPIO_LOG="$gpio_log"
+
+exec "$bin" "$firmware" -X "$xtal" -S "uart=0,port=$tcp_port" -g

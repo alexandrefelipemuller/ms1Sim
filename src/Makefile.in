@@ -25,6 +25,10 @@ pkgs: $(PKGS)
 .PHONY: sims
 sims: pkgs
 
+.PHONY: ms1
+ms1: libs
+	$(MAKE) -C sims/m68hc08.src simulator
+
 apps: $(APPS)
 
 libs: utils_lib cmd_lib sim_lib gui_lib motorola_lib
